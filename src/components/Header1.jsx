@@ -8,6 +8,7 @@ const Header1 = () => {
 
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
 
   // 🔹 Truncate email
   const formatEmail = (email = "") => {
@@ -17,15 +18,20 @@ const Header1 = () => {
     return email;
   };
 
-  // 🔹 Get user from localStorage
+  // 🔹 Get user & token from localStorage
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem("user");
+      const storedToken = localStorage.getItem("token");
+
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
+      if (storedToken) {
+        setToken(storedToken);
+      }
     } catch (err) {
-      console.error("User parse error", err);
+      console.error("LocalStorage parse error", err);
     }
   }, []);
 
@@ -36,9 +42,21 @@ const Header1 = () => {
         setShowLogoutPopup(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+
+    if (showLogoutPopup) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showLogoutPopup]);
+
+  // 🔹 Profile click handler (token check)
+  const handleProfileClick = () => {
+    if (!token) return; // 🚫 not logged in
+    setShowLogoutPopup((prev) => !prev);
+  };
 
   // 🔹 Logout
   const handleLogout = () => {
@@ -51,10 +69,11 @@ const Header1 = () => {
   return (
     <section className="header-section">
       <header
-        className="header py-2 "
-        // style={{
-        //   borderBottom: "1px solid #ccc", // thin border
-        // }}
+        className="header py-2"
+        style={{
+          // background: "linear-gradient(180deg, #0b0f19, #020617)",
+          borderBottom: "1px solid #36454F",
+        }}
       >
         <div className="container-fluid">
           <div className="d-flex align-items-center justify-content-between">
@@ -76,13 +95,14 @@ const Header1 = () => {
             <div ref={popupRef} className="position-relative">
               <div
                 className="d-flex align-items-center gap-2"
+                onClick={handleProfileClick}
                 style={{
-                  padding: "6px 10px", // 🔥 y-axis padding reduced
+                  padding: "6px 10px",
                   border: "1px solid #3E70A1",
                   borderRadius: 10,
-                  cursor: "pointer",
+                  cursor: token ? "pointer" : "not-allowed",
+                  opacity: token ? 1 : 0.6,
                 }}
-                onClick={() => setShowLogoutPopup((p) => !p)}
               >
                 <img
                   src="https://www.bootdey.com/img/Content/avatar/avatar2.png"
@@ -103,13 +123,13 @@ const Header1 = () => {
                       fontWeight: 500,
                     }}
                   >
-                    {user?.full_name || "Guest User"}
+                    {user?.full_name || "SignIN"}
                   </span>
 
                   <span
                     style={{
                       fontSize: 13,
-                      color: "#aaa",
+                      color: "#9ca3af",
                       lineHeight: "14px",
                     }}
                     title={user?.email || ""}
@@ -120,17 +140,19 @@ const Header1 = () => {
               </div>
 
               {/* LOGOUT POPUP */}
-              {showLogoutPopup && (
+              {showLogoutPopup && token && (
                 <div
                   style={{
                     position: "absolute",
                     top: "110%",
                     right: 0,
-                    background: "#111",
-                    borderRadius: 8,
-                    minWidth: 160,
-                    boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
+                    minWidth: 180,
+                    background: "linear-gradient(180deg, #0b0f19, #111827)",
+                    borderRadius: 10,
+                    border: "1px solid #36454F",
+                    boxShadow: "0 10px 25px rgba(0,0,0,0.6)",
                     zIndex: 9999,
+                    overflow: "hidden",
                   }}
                 >
                   <Link
@@ -155,7 +177,7 @@ const Header1 = () => {
                     onClick={handleLogout}
                     className="w-100 text-start px-3 py-2"
                     style={{
-                      background: "none",
+                      background: "transparent",
                       border: "none",
                       color: "#ff4d4f",
                       cursor: "pointer",
@@ -174,3 +196,6 @@ const Header1 = () => {
 };
 
 export default Header1;
+
+
+

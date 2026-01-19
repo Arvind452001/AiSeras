@@ -50,7 +50,7 @@ const Landing = () => {
     <>
       <Header1 />
 
-      <section className="pt-120 pb-120 mt-5 mb-5">
+      <section className="pt-120 pb-120 mt-5 mb-5" >
         <div className="container">
           <div className="row align-items-center pt-80 justify-content-center">
             <div className="col-lg-12 mb-5">

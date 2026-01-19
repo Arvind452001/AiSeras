@@ -13,7 +13,7 @@ const About = () => {
     {/*Container*/}
     <div className="container">
       <div className="section__header section__center pb__60">
-        <h2 className="!text-4xl" data-aos="fade-up">
+        <h2 className="text-4xl" data-aos="fade-up">
           Revolutionize Facial <br />
           Recognition with Us
         </h2>
